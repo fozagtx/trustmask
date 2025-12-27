@@ -6,9 +6,11 @@ import {
   Settings, 
   Bell,
   Menu,
-  X
+  X,
+  Sparkles
 } from 'lucide-react';
 import { useState } from 'react';
+import { LiquidButton } from '@/components/ui/liquid-glass-button';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -63,13 +65,13 @@ export function Sidebar() {
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
             <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-primary" />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <div className="absolute -inset-1 bg-primary/20 rounded-xl blur-lg opacity-50" />
+              <div className="absolute -inset-1 bg-primary/30 rounded-xl blur-lg opacity-50" />
             </div>
             <div>
-              <h1 className="text-xl font-bold gradient-text">PermissionGuard</h1>
+              <h1 className="text-xl font-bold gradient-text">TrustMusk</h1>
               <p className="text-xs text-muted-foreground">Blockchain Monitor</p>
             </div>
           </div>
@@ -108,9 +110,9 @@ export function Sidebar() {
             <div className="glass-card p-4">
               <p className="text-xs text-muted-foreground mb-2">Powered by</p>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium">Envio</span>
+                <span className="text-sm font-medium">Web3</span>
                 <span className="text-muted-foreground">×</span>
-                <span className="text-sm font-medium">MetaMask</span>
+                <span className="text-sm font-medium">TrustMusk</span>
               </div>
             </div>
           </div>

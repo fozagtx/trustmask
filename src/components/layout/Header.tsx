@@ -1,5 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { Bell, Search } from 'lucide-react';
+import { LiquidButton, MetalButton } from '@/components/ui/liquid-glass-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -56,17 +57,17 @@ export function Header() {
                 {(() => {
                   if (!connected) {
                     return (
-                      <Button onClick={openConnectModal} variant="glow">
+                      <MetalButton onClick={openConnectModal} variant="primary">
                         Connect Wallet
-                      </Button>
+                      </MetalButton>
                     );
                   }
 
                   if (chain.unsupported) {
                     return (
-                      <Button onClick={openChainModal} variant="destructive">
+                      <MetalButton onClick={openChainModal} variant="error">
                         Wrong network
-                      </Button>
+                      </MetalButton>
                     );
                   }
 
@@ -88,18 +89,17 @@ export function Header() {
                         {chain.name}
                       </Button>
 
-                      <Button
+                      <LiquidButton
                         onClick={openAccountModal}
-                        variant="secondary"
-                        className="font-mono"
+                        size="sm"
                       >
-                        {account.displayName}
+                        <span className="font-mono">{account.displayName}</span>
                         {account.displayBalance && (
                           <span className="hidden sm:inline ml-2 text-muted-foreground">
                             {account.displayBalance}
                           </span>
                         )}
-                      </Button>
+                      </LiquidButton>
                     </div>
                   );
                 })()}

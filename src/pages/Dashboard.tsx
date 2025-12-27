@@ -34,8 +34,8 @@ function ConnectPrompt() {
             <ConnectButton.Custom>
               {({ openConnectModal }) => (
                 <MetalButton onClick={openConnectModal} variant="primary">
-                  Connect Wallet
-                  <ArrowRight className="w-5 h-5 ml-2" />
+                  Start Monitoring
+                  <ArrowRight className="w-5 h-5 ml-2 -rotate-45" />
                 </MetalButton>
               )}
             </ConnectButton.Custom>

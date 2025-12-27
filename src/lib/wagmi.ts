@@ -21,7 +21,7 @@ export const monadTestnet = {
 } as const;
 
 export const config = getDefaultConfig({
-  appName: 'PermissionGuard',
+  appName: 'TrustMusk',
   projectId: 'demo-project-id', // Replace with actual WalletConnect project ID
   chains: [mainnet, sepolia, monadTestnet],
   transports: {

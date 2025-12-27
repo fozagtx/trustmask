@@ -22,7 +22,7 @@ function ConnectPrompt() {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-2xl"
         >
-          <h1 className="text-3xl sm:text-5xl font-bold mb-6 leading-tight">
+          <h1 className="text-3xl sm:text-5xl font-bold mb-6 leading-tight font-hero">
             Monitor & Manage Your <span className="gradient-text">Blockchain Permissions</span>
           </h1>
           <p className="text-lg text-muted-foreground mb-10">

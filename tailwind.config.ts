@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
         mono: ["JetBrains Mono", "monospace"],
+        hero: ["Geist", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

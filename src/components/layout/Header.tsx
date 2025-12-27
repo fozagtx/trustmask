@@ -1,9 +1,10 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { Bell, Search, Sparkles } from 'lucide-react';
+import { Bell, Search } from 'lucide-react';
 import { LiquidButton, MetalButton } from '@/components/ui/liquid-glass-button';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import logo from '@/assets/logo.png';
 
 export function Header() {
   return (
@@ -11,12 +12,7 @@ export function Header() {
       <div className="flex items-center justify-between h-14 px-4 lg:px-6 rounded-2xl border border-border/50 bg-background/60 backdrop-blur-xl shadow-lg shadow-black/5">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-white" />
-            </div>
-            <div className="absolute inset-0 w-9 h-9 bg-primary/30 rounded-xl blur-lg" />
-          </div>
+          <img src={logo} alt="TrustMusk" className="w-10 h-10 object-contain" />
           <span className="text-lg font-bold gradient-text hidden sm:block">TrustMusk</span>
         </div>
 

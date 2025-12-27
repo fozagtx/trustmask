@@ -33,10 +33,10 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <div className="flex min-h-screen w-full">
-              <Sidebar />
-              <div className="flex-1 flex flex-col lg:ml-0">
-                <Header />
+            <div className="min-h-screen w-full">
+              <Header />
+              <div className="flex w-full">
+                <Sidebar />
                 <main className="flex-1 p-6 pt-4 lg:p-8 lg:pt-4 overflow-auto">
                   <Routes>
                     <Route path="/" element={<Dashboard />} />

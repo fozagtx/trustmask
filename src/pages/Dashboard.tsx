@@ -5,57 +5,72 @@ import { HealthScore } from '@/components/dashboard/HealthScore';
 import { useApprovalEvents, usePermissionStats } from '@/hooks/useApprovalEvents';
 import { motion } from 'framer-motion';
 import { useAccount, useChainId } from 'wagmi';
-import { Sparkles, Zap, Lock, ArrowRight, Loader2, AlertCircle, Shield } from 'lucide-react';
-import { MetalButton, LiquidButton } from '@/components/ui/liquid-glass-button';
+import { Zap, Lock, ArrowRight, Loader2, AlertCircle, Shield } from 'lucide-react';
+import { MetalButton } from '@/components/ui/liquid-glass-button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
+import { HowItWorks } from '@/components/landing/HowItWorks';
+import { FAQ } from '@/components/landing/FAQ';
+import { Footer } from '@/components/landing/Footer';
 
 function ConnectPrompt() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-xl"
-      >
-        <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-          Monitor & Manage Your <span className="gradient-text">Blockchain Permissions</span>
-        </h1>
-        <p className="text-lg text-muted-foreground mb-10">
-          Stay safe from unlimited approvals and malicious contracts. 
-          Connect your wallet to get started.
-        </p>
+    <div className="max-w-5xl mx-auto">
+      {/* Hero Section */}
+      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center px-4 pt-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-2xl"
+        >
+          <h1 className="text-3xl sm:text-5xl font-bold mb-6 leading-tight">
+            Monitor & Manage Your <span className="gradient-text">Blockchain Permissions</span>
+          </h1>
+          <p className="text-lg text-muted-foreground mb-10">
+            Stay safe from unlimited approvals and malicious contracts. 
+            Connect your wallet to get started.
+          </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
-          <ConnectButton.Custom>
-            {({ openConnectModal }) => (
-              <MetalButton onClick={openConnectModal} variant="primary">
-                Connect Wallet
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </MetalButton>
-            )}
-          </ConnectButton.Custom>
-        </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <ConnectButton.Custom>
+              {({ openConnectModal }) => (
+                <MetalButton onClick={openConnectModal} variant="primary">
+                  Connect Wallet
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </MetalButton>
+              )}
+            </ConnectButton.Custom>
+          </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {[
-            { icon: Shield, title: 'Track Permissions', desc: 'Monitor all token approvals' },
-            { icon: Zap, title: 'Real-time Alerts', desc: 'Instant notifications' },
-            { icon: Lock, title: 'One-click Revoke', desc: 'Secure your assets' },
-          ].map((feature, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 + index * 0.1 }}
-              className="glass-card p-4 text-left"
-            >
-              <feature.icon className="w-8 h-8 text-primary mb-2" />
-              <h3 className="font-medium mb-1">{feature.title}</h3>
-              <p className="text-sm text-muted-foreground">{feature.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[
+              { icon: Shield, title: 'Track Permissions', desc: 'Monitor all token approvals' },
+              { icon: Zap, title: 'Real-time Alerts', desc: 'Instant notifications' },
+              { icon: Lock, title: 'One-click Revoke', desc: 'Secure your assets' },
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 + index * 0.1 }}
+                className="glass-card p-4 text-left"
+              >
+                <feature.icon className="w-8 h-8 text-primary mb-2" />
+                <h3 className="font-medium mb-1">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      </div>
+
+      {/* How It Works */}
+      <HowItWorks />
+
+      {/* FAQ */}
+      <FAQ />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }

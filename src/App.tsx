@@ -11,6 +11,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
 import { ThemeProvider, useTheme } from "@/components/theme-provider";
 import { ShaderBackground } from "@/components/ui/shader-background";
+import { SmartAccountProvider } from "@/contexts/SmartAccountContext";
 import Dashboard from "./pages/Dashboard";
 import PermissionsPage from "./pages/Permissions";
 import Analytics from "./pages/Analytics";
@@ -71,7 +72,9 @@ const App = () => (
   <ThemeProvider defaultTheme="dark" storageKey="trustmask-theme">
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        <AppContent />
+        <SmartAccountProvider>
+          <AppContent />
+        </SmartAccountProvider>
       </QueryClientProvider>
     </WagmiProvider>
   </ThemeProvider>

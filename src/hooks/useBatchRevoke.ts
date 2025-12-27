@@ -2,6 +2,7 @@ import { useSendTransaction, useWaitForTransactionReceipt, useAccount } from 'wa
 import { encodeFunctionData } from 'viem';
 import { toast } from 'sonner';
 import { useEffect, useState } from 'react';
+import { useSmartAccountContext } from '@/contexts/SmartAccountContext';
 
 // Multicall3 contract (deployed on most EVM chains)
 const MULTICALL3_ADDRESS = '0xcA11bde05977b3631167028862bE2a173976CA11' as const;
@@ -56,19 +57,27 @@ interface RevokeItem {
 
 export function useBatchRevoke() {
   const { address } = useAccount();
-  const { sendTransaction, data: hash, isPending, error, reset } = useSendTransaction();
+  const { sendTransaction, data: hash, isPending: isEOAPending, error, reset } = useSendTransaction();
+  const { smartAccount, bundlerClient, isSmartAccountReady } = useSmartAccountContext();
+
   const [itemCount, setItemCount] = useState(0);
-  
-  const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
+  const [isSmartAccountPending, setIsSmartAccountPending] = useState(false);
+  const [isSmartAccountConfirming, setIsSmartAccountConfirming] = useState(false);
+  const [smartAccountSuccess, setSmartAccountSuccess] = useState(false);
+
+  const { isLoading: isConfirming, isSuccess: isEOASuccess } = useWaitForTransactionReceipt({
     hash,
   });
 
+  const isPending = isSmartAccountReady ? isSmartAccountPending : isEOAPending;
+  const isSuccess = isSmartAccountReady ? smartAccountSuccess : isEOASuccess;
+
   useEffect(() => {
-    if (isSuccess && hash) {
+    if (isEOASuccess && hash && !isSmartAccountReady) {
       toast.success(`Successfully revoked ${itemCount} permission${itemCount > 1 ? 's' : ''}!`);
       reset();
     }
-  }, [isSuccess, hash, itemCount, reset]);
+  }, [isEOASuccess, hash, itemCount, reset, isSmartAccountReady]);
 
   useEffect(() => {
     if (error) {
@@ -90,9 +99,73 @@ export function useBatchRevoke() {
 
     setItemCount(items.length);
 
+    // Use Smart Account if ready - native batch support without multicall!
+    if (isSmartAccountReady && smartAccount && bundlerClient) {
+      setIsSmartAccountPending(true);
+      setSmartAccountSuccess(false);
+
+      try {
+        toast.info(`Submitting batch revoke of ${items.length} permission${items.length > 1 ? 's' : ''} via Smart Account...`);
+
+        // Build calls for smart account - no need for multicall wrapper!
+        const calls = items.map((item) => ({
+          to: item.tokenAddress,
+          data: encodeFunctionData({
+            abi: erc20ApproveAbi,
+            functionName: 'approve',
+            args: [item.spenderAddress, 0n],
+          }),
+          value: 0n,
+        }));
+
+        // Get gas prices
+        const gasPrice = await bundlerClient.request({
+          method: 'pimlico_getUserOperationGasPrice' as any,
+        }).catch(() => null);
+
+        // Send user operation with all calls batched natively
+        const userOpHash = await bundlerClient.sendUserOperation({
+          account: smartAccount,
+          calls,
+          ...(gasPrice
+            ? {
+                maxFeePerGas: BigInt((gasPrice as any).standard?.maxFeePerGas ?? 1n),
+                maxPriorityFeePerGas: BigInt((gasPrice as any).standard?.maxPriorityFeePerGas ?? 1n),
+              }
+            : {}),
+        });
+
+        setIsSmartAccountPending(false);
+        setIsSmartAccountConfirming(true);
+
+        toast.info('Waiting for confirmation...');
+
+        // Wait for receipt
+        const receipt = await bundlerClient.waitForUserOperationReceipt({
+          hash: userOpHash,
+        });
+
+        setIsSmartAccountConfirming(false);
+
+        if (receipt.success) {
+          setSmartAccountSuccess(true);
+          toast.success(`Successfully revoked ${items.length} permission${items.length > 1 ? 's' : ''} via Smart Account!`);
+        } else {
+          toast.error('Batch user operation failed');
+        }
+      } catch (err) {
+        console.error('Smart account batch revoke failed:', err);
+        setIsSmartAccountPending(false);
+        setIsSmartAccountConfirming(false);
+        toast.error('Failed to batch revoke via Smart Account');
+      }
+      return;
+    }
+
+    // Fallback to EOA with Multicall3
     try {
       // Build multicall data for all revokes
-      const calls = items.map(item => ({
+      const calls = items.map((item) => ({
         target: item.tokenAddress,
         allowFailure: false,
         callData: encodeFunctionData({
@@ -113,7 +186,7 @@ export function useBatchRevoke() {
         to: MULTICALL3_ADDRESS,
         data,
       });
-      
+
       toast.info(`Confirm batch revoke of ${items.length} permission${items.length > 1 ? 's' : ''} in your wallet...`);
     } catch (err) {
       console.error('Batch revoke failed:', err);
@@ -124,7 +197,7 @@ export function useBatchRevoke() {
   return {
     batchRevoke,
     isPending,
-    isConfirming,
+    isConfirming: isSmartAccountReady ? isSmartAccountConfirming : isConfirming,
     isSuccess,
     hash,
   };

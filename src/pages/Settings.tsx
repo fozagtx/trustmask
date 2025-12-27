@@ -1,12 +1,15 @@
 import { motion } from 'framer-motion';
-import { User, Palette, Shield, Wallet, Save } from 'lucide-react';
+import { User, Palette, Shield, Wallet, Save, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { useAccount, useDisconnect } from 'wagmi';
+import { Badge } from '@/components/ui/badge';
+import { useAccount, useDisconnect, useChainId } from 'wagmi';
 import { useState } from 'react';
 import { toast } from 'sonner';
+import { useSmartAccountContext } from '@/contexts/SmartAccountContext';
+import { SMART_ACCOUNT_SUPPORTED_CHAINS } from '@/lib/smartAccount';
 import {
   Select,
   SelectContent,
@@ -18,8 +21,27 @@ import {
 export default function Settings() {
   const { address, isConnected } = useAccount();
   const { disconnect } = useDisconnect();
+  const chainId = useChainId();
   const [autoRevoke, setAutoRevoke] = useState(false);
   const [showTestnets, setShowTestnets] = useState(true);
+
+  const {
+    smartAccountAddress,
+    isSmartAccountEnabled,
+    isSmartAccountSupported,
+    isSmartAccountReady,
+    isInitializing,
+    enableSmartAccount,
+    disableSmartAccount,
+  } = useSmartAccountContext();
+
+  const handleSmartAccountToggle = async (enabled: boolean) => {
+    if (enabled) {
+      await enableSmartAccount();
+    } else {
+      disableSmartAccount();
+    }
+  };
 
   const handleSave = () => {
     toast.success('Settings saved successfully');
@@ -61,6 +83,87 @@ export default function Settings() {
         ) : (
           <p className="text-muted-foreground">No wallet connected</p>
         )}
+      </motion.div>
+
+      {/* Smart Account Settings */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05 }}
+        className="glass-card p-6 space-y-6"
+      >
+        <div className="flex items-center gap-3 pb-4 border-b border-border">
+          <div className="p-2 rounded-lg bg-primary/10">
+            <Zap className="w-5 h-5 text-primary" />
+          </div>
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-semibold">Smart Account</h2>
+            <Badge variant="secondary" className="text-xs">Beta</Badge>
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <Label className="text-base">Enable Smart Account</Label>
+              <p className="text-sm text-muted-foreground">
+                Use MetaMask Smart Account for batched transactions and gasless operations
+              </p>
+            </div>
+            <Switch
+              checked={isSmartAccountEnabled}
+              onCheckedChange={handleSmartAccountToggle}
+              disabled={!isConnected || isInitializing}
+            />
+          </div>
+
+          {isSmartAccountEnabled && (
+            <div className="space-y-3 pt-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Status:</span>
+                {isInitializing ? (
+                  <Badge variant="secondary">Initializing...</Badge>
+                ) : isSmartAccountReady ? (
+                  <Badge variant="default" className="bg-green-500/10 text-green-500 border-green-500/20">
+                    Active
+                  </Badge>
+                ) : !isSmartAccountSupported ? (
+                  <Badge variant="destructive">Unsupported Network</Badge>
+                ) : (
+                  <Badge variant="secondary">Not Ready</Badge>
+                )}
+              </div>
+
+              {smartAccountAddress && (
+                <div>
+                  <Label className="text-muted-foreground text-sm">Smart Account Address</Label>
+                  <p className="font-mono text-sm mt-1">{smartAccountAddress}</p>
+                </div>
+              )}
+
+              {!isSmartAccountSupported && (
+                <div className="p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+                  <p className="text-sm text-yellow-500">
+                    Smart accounts are currently supported on Sepolia testnet only.
+                    Please switch networks to use this feature.
+                  </p>
+                </div>
+              )}
+
+              <div className="p-3 rounded-lg bg-muted/50">
+                <p className="text-sm text-muted-foreground">
+                  <strong>Benefits:</strong>
+                </p>
+                <ul className="text-sm text-muted-foreground mt-1 space-y-1">
+                  <li>- Native batch transactions (no multicall needed)</li>
+                  <li>- Gas sponsorship support (coming soon)</li>
+                  <li>- Session keys for automated actions</li>
+                  <li>- Enhanced security with delegation controls</li>
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
       </motion.div>
 
       {/* Display Settings */}
@@ -133,7 +236,7 @@ export default function Settings() {
 
           <div>
             <Label className="mb-2 block">Trusted Spenders</Label>
-            <Input 
+            <Input
               placeholder="Add contract address..."
               className="bg-secondary/50"
             />

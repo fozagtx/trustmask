@@ -12,7 +12,7 @@ export function Header() {
   const { isConnected } = useAccount();
 
   return (
-    <header className="sticky top-4 z-30 mx-auto max-w-7xl px-4 lg:px-6">
+    <header className="sticky top-4 z-30 mx-auto max-w-4xl px-4">
       <div className="flex items-center justify-between h-14 px-4 lg:px-6 rounded-2xl border border-border/50 bg-background/60 backdrop-blur-xl shadow-lg shadow-black/5">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3">

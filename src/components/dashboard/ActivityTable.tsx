@@ -11,6 +11,22 @@ interface ActivityTableProps {
 }
 
 export function ActivityTable({ activities }: ActivityTableProps) {
+  if (activities.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="glass-card p-8 text-center"
+      >
+        <h2 className="text-lg font-semibold mb-2">Recent Activity</h2>
+        <p className="text-sm text-muted-foreground">
+          No recent approval activity found. When you approve tokens for protocols, activity will appear here.
+        </p>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -22,11 +38,8 @@ export function ActivityTable({ activities }: ActivityTableProps) {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold">Recent Activity</h2>
-            <p className="text-sm text-muted-foreground">Last 24 hours</p>
+            <p className="text-sm text-muted-foreground">{activities.length} events</p>
           </div>
-          <Button variant="outline" size="sm">
-            View All
-          </Button>
         </div>
       </div>
 
@@ -60,15 +73,9 @@ export function ActivityTable({ activities }: ActivityTableProps) {
                         : "bg-destructive/20"
                     )}>
                       {activity.action === 'granted' ? (
-                        <ArrowUpRight className={cn(
-                          "w-3.5 h-3.5",
-                          "text-success"
-                        )} />
+                        <ArrowUpRight className="w-3.5 h-3.5 text-success" />
                       ) : (
-                        <ArrowDownLeft className={cn(
-                          "w-3.5 h-3.5",
-                          "text-destructive"
-                        )} />
+                        <ArrowDownLeft className="w-3.5 h-3.5 text-destructive" />
                       )}
                     </div>
                     <Badge 
@@ -90,7 +97,9 @@ export function ActivityTable({ activities }: ActivityTableProps) {
                 <td>
                   <div>
                     <p className="font-medium">{activity.spenderName}</p>
-                    <p className="text-xs text-muted-foreground font-mono">{activity.spender}</p>
+                    <p className="text-xs text-muted-foreground font-mono">
+                      {activity.spender.slice(0, 6)}...{activity.spender.slice(-4)}
+                    </p>
                   </div>
                 </td>
                 <td className="font-mono">{activity.amount}</td>

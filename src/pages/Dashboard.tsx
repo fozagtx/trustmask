@@ -3,10 +3,9 @@ import { ActivityTable } from '@/components/dashboard/ActivityTable';
 import { RiskAlerts } from '@/components/dashboard/RiskAlerts';
 import { HealthScore } from '@/components/dashboard/HealthScore';
 import { useApprovalEvents, usePermissionStats } from '@/hooks/useApprovalEvents';
-import { mockStats, mockActivity, mockPermissions } from '@/lib/mockData';
 import { motion } from 'framer-motion';
-import { useAccount } from 'wagmi';
-import { Shield, Zap, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { useAccount, useChainId } from 'wagmi';
+import { Shield, Zap, Lock, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
@@ -68,8 +67,18 @@ function ConnectPrompt() {
   );
 }
 
+function getChainDisplayName(chainId: number): string {
+  switch (chainId) {
+    case 1: return 'Ethereum Mainnet';
+    case 11155111: return 'Sepolia Testnet';
+    case 41454: return 'Monad Testnet';
+    default: return 'Unknown Chain';
+  }
+}
+
 export default function Dashboard() {
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+  const chainId = useChainId();
   const { data, isLoading, error } = useApprovalEvents();
   const stats = usePermissionStats();
 
@@ -77,22 +86,13 @@ export default function Dashboard() {
     return <ConnectPrompt />;
   }
 
-  // Use real data if available, otherwise fallback to mock
-  const permissions = data?.permissions?.length ? data.permissions : mockPermissions;
-  const activities = data?.activities?.length ? data.activities : mockActivity;
-  const displayStats = data?.permissions?.length ? {
-    activePermissions: stats.activePermissions,
-    totalValueAtRisk: stats.totalValueAtRisk,
-    revokedToday: stats.revokedToday,
-    chainsMonitored: stats.chainsMonitored,
-    permissionsChange: stats.permissionsChange,
-    valueChange: stats.valueChange,
-  } : mockStats;
+  const permissions = data?.permissions || [];
+  const activities = data?.activities || [];
 
   // Calculate health score based on real data
   const healthScore = permissions.length > 0 
     ? Math.round(permissions.reduce((sum, p) => sum + p.riskScore, 0) / permissions.length)
-    : 72;
+    : 100; // Perfect score if no risky permissions
 
   return (
     <div className="space-y-6">
@@ -100,11 +100,39 @@ export default function Dashboard() {
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">
-            {isLoading ? 'Fetching on-chain data...' : 'Real-time blockchain permissions'}
+            {isLoading 
+              ? 'Scanning blockchain for approvals...' 
+              : `Connected to ${getChainDisplayName(chainId)}`
+            }
           </p>
         </div>
         {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
       </div>
+
+      {/* Status message */}
+      {!isLoading && permissions.length === 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="glass-card p-6 border-success/30 bg-success/5"
+        >
+          <div className="flex items-start gap-4">
+            <div className="p-2 rounded-lg bg-success/20">
+              <Shield className="w-5 h-5 text-success" />
+            </div>
+            <div>
+              <h3 className="font-medium text-success mb-1">No Active Approvals Found</h3>
+              <p className="text-sm text-muted-foreground">
+                Great news! Your wallet ({address?.slice(0, 6)}...{address?.slice(-4)}) has no active token approvals 
+                on {getChainDisplayName(chainId)}. This means no contracts can spend your tokens without your permission.
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Try switching networks or use DeFi protocols to see approvals here.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {error && (
         <motion.div
@@ -112,13 +140,16 @@ export default function Dashboard() {
           animate={{ opacity: 1 }}
           className="glass-card p-4 border-warning/50"
         >
-          <p className="text-sm text-warning">
-            Using demo data. Connect to Ethereum mainnet or Sepolia to see real approvals.
-          </p>
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-warning" />
+            <p className="text-sm text-warning">
+              Error fetching data. Please try refreshing or switching networks.
+            </p>
+          </div>
         </motion.div>
       )}
 
-      <StatsCards stats={displayStats} />
+      <StatsCards stats={stats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -131,8 +162,16 @@ export default function Dashboard() {
             transition={{ delay: 0.25 }}
             className="glass-card p-6"
           >
-            <h3 className="text-lg font-semibold mb-4">Overall Health</h3>
+            <h3 className="text-lg font-semibold mb-4">Security Score</h3>
             <HealthScore score={healthScore} size="lg" />
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              {healthScore >= 80 
+                ? 'Your wallet permissions are well managed' 
+                : healthScore >= 50 
+                  ? 'Consider reviewing some permissions'
+                  : 'High risk - review your approvals immediately'
+              }
+            </p>
           </motion.div>
           <RiskAlerts permissions={permissions} />
         </div>

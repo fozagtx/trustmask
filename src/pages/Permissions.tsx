@@ -1,10 +1,9 @@
 import { PermissionsTable } from '@/components/permissions/PermissionsTable';
 import { useApprovalEvents } from '@/hooks/useApprovalEvents';
-import { mockPermissions } from '@/lib/mockData';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search, Filter, RefreshCw, Loader2 } from 'lucide-react';
+import { Search, Filter, RefreshCw, Loader2, Shield } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -12,24 +11,30 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useQueryClient } from '@tanstack/react-query';
-import { useAccount } from 'wagmi';
+import { useAccount, useChainId } from 'wagmi';
 import { useState } from 'react';
+
+function getChainDisplayName(chainId: number): string {
+  switch (chainId) {
+    case 1: return 'Ethereum Mainnet';
+    case 11155111: return 'Sepolia Testnet';
+    case 41454: return 'Monad Testnet';
+    default: return 'Unknown Chain';
+  }
+}
 
 export default function PermissionsPage() {
   const { isConnected, address } = useAccount();
+  const chainId = useChainId();
   const { data, isLoading, refetch, isFetching } = useApprovalEvents();
-  const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [chainFilter, setChainFilter] = useState('all-chains');
   const [statusFilter, setStatusFilter] = useState('all-status');
 
-  // Use real data if available, otherwise fallback to mock
-  const rawPermissions = data?.permissions?.length ? data.permissions : mockPermissions;
+  const rawPermissions = data?.permissions || [];
   
   // Apply filters
   const permissions = rawPermissions.filter(p => {
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const matchesSearch = 
@@ -40,12 +45,10 @@ export default function PermissionsPage() {
       if (!matchesSearch) return false;
     }
     
-    // Chain filter
     if (chainFilter !== 'all-chains') {
       if (p.chain.toLowerCase() !== chainFilter) return false;
     }
     
-    // Status filter
     if (statusFilter !== 'all-status') {
       if (p.status !== statusFilter) return false;
     }
@@ -65,7 +68,10 @@ export default function PermissionsPage() {
         <div>
           <h1 className="text-2xl font-bold">Permissions</h1>
           <p className="text-muted-foreground">
-            {isLoading ? 'Fetching on-chain approvals...' : `${permissions.length} token approvals found`}
+            {isLoading 
+              ? 'Scanning blockchain for approvals...' 
+              : `${permissions.length} active approvals on ${getChainDisplayName(chainId)}`
+            }
           </p>
         </div>
         <Button 
@@ -128,7 +134,24 @@ export default function PermissionsPage() {
         </div>
       </motion.div>
 
-      <PermissionsTable permissions={permissions} />
+      {!isLoading && permissions.length === 0 ? (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card p-12 text-center"
+        >
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-success/20 flex items-center justify-center">
+            <Shield className="w-8 h-8 text-success" />
+          </div>
+          <h3 className="text-xl font-semibold mb-2">No Active Approvals</h3>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            Your wallet has no active token approvals on {getChainDisplayName(chainId)}. 
+            When you approve tokens for DeFi protocols, they'll appear here.
+          </p>
+        </motion.div>
+      ) : (
+        <PermissionsTable permissions={permissions} />
+      )}
     </div>
   );
 }

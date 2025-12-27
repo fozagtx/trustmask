@@ -41,7 +41,7 @@ export function FAQ() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-3xl font-bold mb-4"
+          className="text-3xl font-bold mb-4 font-hero"
         >
           Frequently Asked <span className="gradient-text">Questions</span>
         </motion.h2>

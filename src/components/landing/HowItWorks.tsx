@@ -32,7 +32,7 @@ export function HowItWorks() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-3xl font-bold mb-4"
+          className="text-3xl font-bold mb-4 font-hero"
         >
           How It <span className="gradient-text">Works</span>
         </motion.h2>

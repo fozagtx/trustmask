@@ -20,6 +20,16 @@ export function Header() {
           <span className="text-lg font-bold gradient-text hidden sm:block">TrustMusk</span>
         </div>
 
+        {/* Nav Links - Only show when not connected */}
+        {!isConnected && (
+          <a 
+            href="#faq" 
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            FAQ
+          </a>
+        )}
+
         {/* Search Bar - Only show when connected */}
         {isConnected && (
           <div className="flex-1 max-w-md mx-4 hidden md:block">

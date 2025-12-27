@@ -37,7 +37,7 @@ const App = () => (
               <Sidebar />
               <div className="flex-1 flex flex-col lg:ml-0">
                 <Header />
-                <main className="flex-1 p-6 lg:p-8 overflow-auto">
+                <main className="flex-1 p-6 pt-4 lg:p-8 lg:pt-4 overflow-auto">
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/permissions" element={<PermissionsPage />} />

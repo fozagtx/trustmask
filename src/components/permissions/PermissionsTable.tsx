@@ -9,6 +9,7 @@ import { type Permission } from '@/lib/mockData';
 import { useState } from 'react';
 import { useRevokeApproval } from '@/hooks/useRevokeApproval';
 import { useBatchRevoke } from '@/hooks/useBatchRevoke';
+import { BatchRevokeDialog } from './BatchRevokeDialog';
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -17,10 +18,12 @@ interface PermissionsTableProps {
 export function PermissionsTable({ permissions }: PermissionsTableProps) {
   const [selected, setSelected] = useState<string[]>([]);
   const [revokingId, setRevokingId] = useState<string | null>(null);
+  const [showBatchDialog, setShowBatchDialog] = useState(false);
   const { revoke, isPending, isConfirming } = useRevokeApproval();
   const { batchRevoke, isPending: isBatchPending, isConfirming: isBatchConfirming } = useBatchRevoke();
 
   const activePermissions = permissions.filter(p => p.status !== 'revoked');
+  const selectedPermissions = permissions.filter(p => selected.includes(p.id) && p.status !== 'revoked');
 
   const toggleSelect = (id: string) => {
     setSelected(prev => 
@@ -45,13 +48,13 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
   };
 
   const handleBatchRevoke = async () => {
-    const selectedPermissions = permissions.filter(p => selected.includes(p.id) && p.status !== 'revoked');
     const items = selectedPermissions.map(p => ({
       tokenAddress: p.token as `0x${string}`,
       spenderAddress: p.spender as `0x${string}`,
     }));
     await batchRevoke(items);
     setSelected([]);
+    setShowBatchDialog(false);
   };
 
   const getExplorerUrl = (txHash: string, chainId: number) => {
@@ -109,7 +112,7 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
                 variant="destructive" 
                 size="sm" 
                 className="gap-1.5"
-                onClick={handleBatchRevoke}
+                onClick={() => setShowBatchDialog(true)}
                 disabled={isBatchRevoking}
               >
                 {isBatchRevoking ? (
@@ -231,6 +234,14 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
           </tbody>
         </table>
       </div>
+
+      <BatchRevokeDialog
+        open={showBatchDialog}
+        onOpenChange={setShowBatchDialog}
+        permissions={selectedPermissions}
+        onConfirm={handleBatchRevoke}
+        isRevoking={isBatchRevoking}
+      />
     </motion.div>
   );
 }

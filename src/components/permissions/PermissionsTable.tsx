@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
-import { ExternalLink, Trash2, CheckCircle, AlertTriangle, XCircle } from 'lucide-react';
+import { ExternalLink, Trash2, CheckCircle, AlertTriangle, XCircle, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 import { type Permission } from '@/lib/mockData';
 import { useState } from 'react';
+import { useRevokeApproval } from '@/hooks/useRevokeApproval';
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -14,6 +15,8 @@ interface PermissionsTableProps {
 
 export function PermissionsTable({ permissions }: PermissionsTableProps) {
   const [selected, setSelected] = useState<string[]>([]);
+  const [revokingId, setRevokingId] = useState<string | null>(null);
+  const { revoke, isPending, isConfirming } = useRevokeApproval();
 
   const toggleSelect = (id: string) => {
     setSelected(prev => 
@@ -28,6 +31,21 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
       setSelected([]);
     } else {
       setSelected(permissions.map(p => p.id));
+    }
+  };
+
+  const handleRevoke = async (permission: Permission) => {
+    setRevokingId(permission.id);
+    await revoke(permission.token as `0x${string}`, permission.spender as `0x${string}`);
+    setRevokingId(null);
+  };
+
+  const getExplorerUrl = (txHash: string, chainId: number) => {
+    switch (chainId) {
+      case 1: return `https://etherscan.io/tx/${txHash}`;
+      case 11155111: return `https://sepolia.etherscan.io/tx/${txHash}`;
+      case 41454: return `https://testnet.monadexplorer.com/tx/${txHash}`;
+      default: return `https://etherscan.io/tx/${txHash}`;
     }
   };
 
@@ -53,6 +71,8 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
         return <Badge className="status-badge status-revoked"><XCircle className="w-3 h-3" />Revoked</Badge>;
     }
   };
+
+  const isRevoking = (id: string) => revokingId === id && (isPending || isConfirming);
 
   return (
     <motion.div
@@ -156,7 +176,12 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
                 </td>
                 <td>
                   <div className="flex items-center gap-1">
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-8 w-8"
+                      onClick={() => window.open(getExplorerUrl(permission.txHash, permission.chainId), '_blank')}
+                    >
                       <ExternalLink className="w-4 h-4" />
                     </Button>
                     {permission.status !== 'revoked' && (
@@ -164,8 +189,14 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
                         variant="ghost" 
                         size="icon" 
                         className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                        onClick={() => handleRevoke(permission)}
+                        disabled={isRevoking(permission.id)}
                       >
-                        <Trash2 className="w-4 h-4" />
+                        {isRevoking(permission.id) ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
                       </Button>
                     )}
                   </div>

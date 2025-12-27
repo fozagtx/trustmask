@@ -2,10 +2,11 @@ import { StatsCards } from '@/components/dashboard/StatsCards';
 import { ActivityTable } from '@/components/dashboard/ActivityTable';
 import { RiskAlerts } from '@/components/dashboard/RiskAlerts';
 import { HealthScore } from '@/components/dashboard/HealthScore';
+import { useApprovalEvents, usePermissionStats } from '@/hooks/useApprovalEvents';
 import { mockStats, mockActivity, mockPermissions } from '@/lib/mockData';
 import { motion } from 'framer-motion';
 import { useAccount } from 'wagmi';
-import { Shield, Zap, Lock, ArrowRight } from 'lucide-react';
+import { Shield, Zap, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 
@@ -69,25 +70,59 @@ function ConnectPrompt() {
 
 export default function Dashboard() {
   const { isConnected } = useAccount();
+  const { data, isLoading, error } = useApprovalEvents();
+  const stats = usePermissionStats();
 
   if (!isConnected) {
     return <ConnectPrompt />;
   }
+
+  // Use real data if available, otherwise fallback to mock
+  const permissions = data?.permissions?.length ? data.permissions : mockPermissions;
+  const activities = data?.activities?.length ? data.activities : mockActivity;
+  const displayStats = data?.permissions?.length ? {
+    activePermissions: stats.activePermissions,
+    totalValueAtRisk: stats.totalValueAtRisk,
+    revokedToday: stats.revokedToday,
+    chainsMonitored: stats.chainsMonitored,
+    permissionsChange: stats.permissionsChange,
+    valueChange: stats.valueChange,
+  } : mockStats;
+
+  // Calculate health score based on real data
+  const healthScore = permissions.length > 0 
+    ? Math.round(permissions.reduce((sum, p) => sum + p.riskScore, 0) / permissions.length)
+    : 72;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Monitor your blockchain permissions</p>
+          <p className="text-muted-foreground">
+            {isLoading ? 'Fetching on-chain data...' : 'Real-time blockchain permissions'}
+          </p>
         </div>
+        {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
       </div>
 
-      <StatsCards stats={mockStats} />
+      {error && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="glass-card p-4 border-warning/50"
+        >
+          <p className="text-sm text-warning">
+            Using demo data. Connect to Ethereum mainnet or Sepolia to see real approvals.
+          </p>
+        </motion.div>
+      )}
+
+      <StatsCards stats={displayStats} />
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <ActivityTable activities={mockActivity} />
+          <ActivityTable activities={activities} />
         </div>
         <div className="space-y-6">
           <motion.div
@@ -97,9 +132,9 @@ export default function Dashboard() {
             className="glass-card p-6"
           >
             <h3 className="text-lg font-semibold mb-4">Overall Health</h3>
-            <HealthScore score={72} size="lg" />
+            <HealthScore score={healthScore} size="lg" />
           </motion.div>
-          <RiskAlerts permissions={mockPermissions} />
+          <RiskAlerts permissions={permissions} />
         </div>
       </div>
     </div>

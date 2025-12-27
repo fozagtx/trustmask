@@ -6,6 +6,67 @@
 
 @layer base {
   :root {
+    /* Light mode */
+    --background: 0 0% 98%;
+    --foreground: 220 20% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 20% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 20% 10%;
+
+    --primary: 25 95% 53%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 220 20% 10%;
+
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 45%;
+
+    --accent: 200 90% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 220 20% 10%;
+
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 25 95% 53%;
+
+    --radius: 0.75rem;
+
+    --font-sans: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(35, 100%, 50%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(200, 90%, 50%) 0%, hsl(210, 100%, 60%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(0, 0%, 100%) 0%, hsl(220, 15%, 98%) 100%);
+    --gradient-glow: radial-gradient(ellipse at center, hsl(25, 95%, 53%, 0.08) 0%, transparent 70%);
+
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(25, 95%, 53%, 0.15);
+    --shadow-card: 0 4px 24px hsl(220, 20%, 80%, 0.3);
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 220 20% 10%;
+    --sidebar-primary: 25 95% 53%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 96%;
+    --sidebar-accent-foreground: 220 20% 10%;
+    --sidebar-border: 220 15% 90%;
+    --sidebar-ring: 25 95% 53%;
+  }
+
+  .dark {
     --background: 220 20% 10%;
     --foreground: 0 0% 98%;
 
@@ -40,18 +101,13 @@
     --input: 220 15% 20%;
     --ring: 25 95% 53%;
 
-    --radius: 0.75rem;
-
-    --font-sans: 'Inter', sans-serif;
-    --font-mono: 'JetBrains Mono', monospace;
-
-    /* MetaMask-inspired gradients */
+    /* Dark gradients */
     --gradient-primary: linear-gradient(135deg, hsl(25, 95%, 53%) 0%, hsl(35, 100%, 50%) 100%);
     --gradient-accent: linear-gradient(135deg, hsl(200, 90%, 50%) 0%, hsl(210, 100%, 60%) 100%);
     --gradient-card: linear-gradient(135deg, hsl(220, 20%, 14%) 0%, hsl(220, 20%, 10%) 100%);
     --gradient-glow: radial-gradient(ellipse at center, hsl(25, 95%, 53%, 0.1) 0%, transparent 70%);
 
-    /* Shadows */
+    /* Dark shadows */
     --shadow-glow: 0 0 40px hsl(25, 95%, 53%, 0.25);
     --shadow-card: 0 4px 24px hsl(220, 20%, 4%, 0.6);
 
@@ -63,11 +119,6 @@
     --sidebar-accent-foreground: 0 0% 98%;
     --sidebar-border: 220 15% 18%;
     --sidebar-ring: 25 95% 53%;
-  }
-
-  .dark {
-    --background: 220 20% 10%;
-    --foreground: 0 0% 98%;
   }
 }
 

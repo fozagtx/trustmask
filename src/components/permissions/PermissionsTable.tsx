@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { type Permission } from '@/lib/mockData';
 import { useState } from 'react';
 import { useRevokeApproval } from '@/hooks/useRevokeApproval';
+import { useBatchRevoke } from '@/hooks/useBatchRevoke';
 
 interface PermissionsTableProps {
   permissions: Permission[];
@@ -17,6 +18,9 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
   const [selected, setSelected] = useState<string[]>([]);
   const [revokingId, setRevokingId] = useState<string | null>(null);
   const { revoke, isPending, isConfirming } = useRevokeApproval();
+  const { batchRevoke, isPending: isBatchPending, isConfirming: isBatchConfirming } = useBatchRevoke();
+
+  const activePermissions = permissions.filter(p => p.status !== 'revoked');
 
   const toggleSelect = (id: string) => {
     setSelected(prev => 
@@ -27,10 +31,10 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
   };
 
   const toggleSelectAll = () => {
-    if (selected.length === permissions.length) {
+    if (selected.length === activePermissions.length) {
       setSelected([]);
     } else {
-      setSelected(permissions.map(p => p.id));
+      setSelected(activePermissions.map(p => p.id));
     }
   };
 
@@ -38,6 +42,16 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
     setRevokingId(permission.id);
     await revoke(permission.token as `0x${string}`, permission.spender as `0x${string}`);
     setRevokingId(null);
+  };
+
+  const handleBatchRevoke = async () => {
+    const selectedPermissions = permissions.filter(p => selected.includes(p.id) && p.status !== 'revoked');
+    const items = selectedPermissions.map(p => ({
+      tokenAddress: p.token as `0x${string}`,
+      spenderAddress: p.spender as `0x${string}`,
+    }));
+    await batchRevoke(items);
+    setSelected([]);
   };
 
   const getExplorerUrl = (txHash: string, chainId: number) => {
@@ -73,6 +87,7 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
   };
 
   const isRevoking = (id: string) => revokingId === id && (isPending || isConfirming);
+  const isBatchRevoking = isBatchPending || isBatchConfirming;
 
   return (
     <motion.div
@@ -85,14 +100,24 @@ export function PermissionsTable({ permissions }: PermissionsTableProps) {
           <div>
             <h2 className="text-lg font-semibold">All Permissions</h2>
             <p className="text-sm text-muted-foreground">
-              {permissions.length} permissions found
+              {permissions.length} permissions found{selected.length > 0 && ` · ${selected.length} selected`}
             </p>
           </div>
           <div className="flex items-center gap-2">
             {selected.length > 0 && (
-              <Button variant="destructive" size="sm" className="gap-1.5">
-                <Trash2 className="w-4 h-4" />
-                Revoke {selected.length} Selected
+              <Button 
+                variant="destructive" 
+                size="sm" 
+                className="gap-1.5"
+                onClick={handleBatchRevoke}
+                disabled={isBatchRevoking}
+              >
+                {isBatchRevoking ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                {isBatchRevoking ? 'Revoking...' : `Revoke ${selected.length} Selected`}
               </Button>
             )}
             <Button variant="outline" size="sm">

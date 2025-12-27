@@ -7,8 +7,8 @@ export function Footer() {
       <div className="flex flex-col md:flex-row items-center justify-between gap-6">
         {/* Brand */}
         <div className="flex items-center gap-3">
-          <img src={logo} alt="TrustMusk" className="w-8 h-8 object-contain" />
-          <span className="font-bold gradient-text">TrustMusk</span>
+          <img src={logo} alt="TrustMask" className="w-8 h-8 object-contain" />
+          <span className="font-bold gradient-text">TrustMask</span>
         </div>
 
         {/* Links */}
@@ -34,7 +34,7 @@ export function Footer() {
       </div>
 
       <div className="text-center text-xs text-muted-foreground mt-8">
-        © {new Date().getFullYear()} TrustMusk. All rights reserved. Built for a safer Web3.
+        © {new Date().getFullYear()} TrustMask. All rights reserved. Built for a safer Web3.
       </div>
     </footer>
   );

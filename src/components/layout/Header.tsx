@@ -16,8 +16,8 @@ export function Header() {
       <div className="flex items-center justify-between h-14 px-3 py-2 rounded-[4px] border border-border bg-background/60 backdrop-blur-xl shadow-lg shadow-black/5 gap-6">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3">
-          <img src={logo} alt="TrustMusk" className="w-10 h-10 object-contain" />
-          <span className="text-lg font-bold gradient-text hidden sm:block">TrustMusk</span>
+          <img src={logo} alt="TrustMask" className="w-10 h-10 object-contain" />
+          <span className="text-lg font-bold gradient-text hidden sm:block">TrustMask</span>
         </div>
 
         {/* Nav Links - Only show when not connected */}

@@ -12,8 +12,8 @@ const faqs = [
     answer: 'Token approvals are permissions you grant to smart contracts (like DEXs or DeFi protocols) to spend your tokens on your behalf. While necessary for trading and DeFi, unlimited approvals can be risky if the contract is exploited.',
   },
   {
-    question: 'Is TrustMusk safe to use?',
-    answer: 'Yes! TrustMusk is a read-only tool that only scans your wallet for existing approvals. We never ask for your private keys or seed phrase. All revocation transactions require your explicit approval in your wallet.',
+    question: 'Is TrustMask safe to use?',
+    answer: 'Yes! TrustMask is a read-only tool that only scans your wallet for existing approvals. We never ask for your private keys or seed phrase. All revocation transactions require your explicit approval in your wallet.',
   },
   {
     question: 'What chains are supported?',
@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     question: 'How much does it cost to revoke an approval?',
-    answer: 'Revoking an approval requires a small gas fee paid in the native token of the chain (ETH for Ethereum). TrustMusk does not charge any additional fees.',
+    answer: 'Revoking an approval requires a small gas fee paid in the native token of the chain (ETH for Ethereum). TrustMask does not charge any additional fees.',
   },
   {
     question: 'Why should I revoke unused approvals?',
@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     question: 'Can I revoke multiple approvals at once?',
-    answer: 'Yes! TrustMusk supports batch revocation, allowing you to revoke multiple approvals in a single transaction, saving time and gas fees.',
+    answer: 'Yes! TrustMask supports batch revocation, allowing you to revoke multiple approvals in a single transaction, saving time and gas fees.',
   },
 ];
 

@@ -68,7 +68,7 @@ function AppContent() {
 }
 
 const App = () => (
-  <ThemeProvider defaultTheme="dark" storageKey="trustmusk-theme">
+  <ThemeProvider defaultTheme="dark" storageKey="trustmask-theme">
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
         <AppContent />

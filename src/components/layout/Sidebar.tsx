@@ -63,9 +63,9 @@ export function Sidebar() {
         <div className="flex flex-col h-full p-6">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <img src={logo} alt="TrustMusk" className="w-12 h-12 object-contain" />
+            <img src={logo} alt="TrustMask" className="w-12 h-12 object-contain" />
             <div>
-              <h1 className="text-xl font-bold gradient-text">TrustMusk</h1>
+              <h1 className="text-xl font-bold gradient-text">TrustMask</h1>
               <p className="text-xs text-muted-foreground">Blockchain Monitor</p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export function Sidebar() {
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium">Web3</span>
                 <span className="text-muted-foreground">×</span>
-                <span className="text-sm font-medium">TrustMusk</span>
+                <span className="text-sm font-medium">TrustMask</span>
               </div>
             </div>
           </div>

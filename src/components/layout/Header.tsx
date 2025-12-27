@@ -12,8 +12,8 @@ export function Header() {
   const { isConnected } = useAccount();
 
   return (
-    <header className="sticky top-4 z-30 mx-auto max-w-4xl px-4">
-      <div className="flex items-center justify-between h-14 px-4 lg:px-6 rounded-2xl border border-border/50 bg-background/60 backdrop-blur-xl shadow-lg shadow-black/5">
+    <header className="sticky top-4 z-30 mx-auto w-fit px-4">
+      <div className="flex items-center justify-between h-12 px-4 rounded-full border border-border/50 bg-background/60 backdrop-blur-xl shadow-lg shadow-black/5 gap-4">
         {/* Logo & Brand */}
         <div className="flex items-center gap-3">
           <img src={logo} alt="TrustMusk" className="w-10 h-10 object-contain" />

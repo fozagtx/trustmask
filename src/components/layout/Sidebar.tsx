@@ -6,14 +6,13 @@ import {
   Settings, 
   Bell,
   Menu,
-  X,
-  Sparkles
+  X
 } from 'lucide-react';
 import { useState } from 'react';
-import { LiquidButton } from '@/components/ui/liquid-glass-button';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import logo from '@/assets/logo.png';
 
 const navItems = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -64,12 +63,7 @@ export function Sidebar() {
         <div className="flex flex-col h-full p-6">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <div className="relative">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
-              <div className="absolute -inset-1 bg-primary/30 rounded-xl blur-lg opacity-50" />
-            </div>
+            <img src={logo} alt="TrustMusk" className="w-12 h-12 object-contain" />
             <div>
               <h1 className="text-xl font-bold gradient-text">TrustMusk</h1>
               <p className="text-xs text-muted-foreground">Blockchain Monitor</p>

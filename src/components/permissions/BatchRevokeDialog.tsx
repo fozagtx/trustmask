@@ -13,17 +13,52 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Loader2, AlertTriangle, Fuel, Trash2 } from 'lucide-react';
 import { type Permission } from '@/lib/mockData';
 import { useEstimateGas, useGasPrice } from 'wagmi';
-import { encodeFunctionData, parseAbi, formatGwei, formatEther } from 'viem';
+import { encodeFunctionData, formatGwei, formatEther } from 'viem';
 
 const MULTICALL3_ADDRESS = '0xcA11bde05977b3631167028862bE2a173976CA11' as const;
 
-const multicall3Abi = parseAbi([
-  'function aggregate3(tuple(address target, bool allowFailure, bytes callData)[] calls) payable returns (tuple(bool success, bytes returnData)[])',
-]);
+// Use full ABI object format instead of parseAbi for complex tuple types
+const multicall3Abi = [
+  {
+    type: 'function',
+    name: 'aggregate3',
+    stateMutability: 'payable',
+    inputs: [
+      {
+        name: 'calls',
+        type: 'tuple[]',
+        components: [
+          { name: 'target', type: 'address' },
+          { name: 'allowFailure', type: 'bool' },
+          { name: 'callData', type: 'bytes' },
+        ],
+      },
+    ],
+    outputs: [
+      {
+        name: 'returnData',
+        type: 'tuple[]',
+        components: [
+          { name: 'success', type: 'bool' },
+          { name: 'returnData', type: 'bytes' },
+        ],
+      },
+    ],
+  },
+] as const;
 
-const erc20ApproveAbi = parseAbi([
-  'function approve(address spender, uint256 value) returns (bool)',
-]);
+const erc20ApproveAbi = [
+  {
+    type: 'function',
+    name: 'approve',
+    stateMutability: 'nonpayable',
+    inputs: [
+      { name: 'spender', type: 'address' },
+      { name: 'value', type: 'uint256' },
+    ],
+    outputs: [{ type: 'bool' }],
+  },
+] as const;
 
 interface BatchRevokeDialogProps {
   open: boolean;
